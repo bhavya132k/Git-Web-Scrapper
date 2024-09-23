@@ -13,7 +13,7 @@ Graphical Display: Visualizes relationships between projects in a graphical form
 Component Selection: Optionally includes categories that were used for selecting components in the project.
 
 - [X] Ravi
-- [ ] Prudhvi
+- [X] Prudhvi
 - [ ] Karthik
 - [X] Nikith
 - [ ] Bhavya
