@@ -11,3 +11,9 @@ Direct Access: Provides clickable project names, linking directly to their corre
 Graphical Display: Visualizes relationships between projects in a graphical format.
 
 Component Selection: Optionally includes categories that were used for selecting components in the project.
+
+- [X] Ravi
+- [ ] Prudhvi
+- [ ] Karthik
+- [ ] Nikith
+- [ ] Bhavya
