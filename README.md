@@ -14,6 +14,6 @@ Component Selection: Optionally includes categories that were used for selecting
 
 - [X] Ravi
 - [X] Prudhvi
-- [ ] Karthik
+- [x] Karthik
 - [X] Nikith
 - [X] Bhavya
