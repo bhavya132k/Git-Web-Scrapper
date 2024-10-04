@@ -3,13 +3,18 @@ import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
-import { Button, Select } from "@mui/material";
+import { Button, Select, Chip } from "@mui/material";
 
 export default function SearchBar() {
   const [value, setValue] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
 
-
+  const handleTagChange = (_event: any, newValue: string[]) => {
+    // only upto 5 keywords
+    if (newValue.length <= 5) {
+      setValue(newValue);
+    }
+  };
 
   return (
     <Stack
@@ -24,20 +29,15 @@ export default function SearchBar() {
         options={[]}
         value={value}
         inputValue={inputValue}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
+        onChange={handleTagChange}
         fullWidth
-        onInputChange={(event, newInputValue) => {
+        onInputChange={(_event, newInputValue) => {
           const options = newInputValue.split(",");
 
           if (options.length > 1) {
-            setValue(
-              value
-                .concat(options)
-                .map((x) => x.trim())
-                .filter((x) => x)
-            );
+            const newKeywords = options.map((x) => x.trim()).filter((x) => x);
+            const updatedValue = [...value, ...newKeywords].slice(0, 5); // only allow 5 keyowrds doesn't allow 6th keyword
+            setValue(updatedValue);
             setInputValue("");
           } else {
             setInputValue(newInputValue);
@@ -50,6 +50,18 @@ export default function SearchBar() {
             label="Keywords"
             placeholder=""
           />
+        )}
+        renderTags={(value, getTagProps) => (
+          <>
+            {value.map((option, index) => (
+              <Chip
+                key={option}
+                label={option}
+                {...getTagProps({ index })}
+                style={{ margin: "2px" }}
+              />
+            ))}
+          </>
         )}
       />
       <Select

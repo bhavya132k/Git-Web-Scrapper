@@ -1,7 +1,3 @@
-
-
-
-
 import { useState, useMemo } from 'react';
 import { createTheme, PaletteMode } from '@mui/material/styles';
 
