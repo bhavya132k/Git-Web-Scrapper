@@ -1,12 +1,14 @@
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import RepoTable from "./components/RepoTable";
-// import AppBar  from "@mui/material/AppBar";
+import RepoDetails from "./components/RepoDetails";
 import NavBar from "./components/NavBar";
 import SearchBar from "./components/SearchBar";
-import Stack from "@mui/material/Stack";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import useThemeContext from "./hooks/useThemeContext";
 // import Container from "@mui/material/Container";
+// import AppBar  from "@mui/material/AppBar";
+// import Stack from "@mui/material/Stack";
 
 function App() {
   const { theme } = useThemeContext();
@@ -14,11 +16,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-        <Stack spacing={4}>
+        <Router>
           <NavBar />
           <SearchBar />
-          <RepoTable />
-        </Stack>
+          <Routes>
+            <Route path="/" element={<RepoTable />} />
+            <Route path="/repo/:repoId" element={<RepoDetails />} />
+          </Routes>
+        </Router>
     </ThemeProvider>
   );
 }

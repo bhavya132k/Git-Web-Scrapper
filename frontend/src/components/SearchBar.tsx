@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-use-before-define */
 import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -15,7 +16,6 @@ export default function SearchBar() {
       setValue(newValue);
     }
   };
-
   return (
     <Stack
       spacing={{ xs: 1, sm: 2 }}
@@ -55,7 +55,7 @@ export default function SearchBar() {
           <>
             {value.map((option, index) => (
               <Chip
-                key={option}
+                // key={option}
                 label={option}
                 {...getTagProps({ index })}
                 style={{ margin: "2px" }}
