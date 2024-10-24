@@ -9,6 +9,8 @@ import useThemeContext from '../hooks/useThemeContext';
 
 export default function NavBar() {
   const { mode, setMode, theme } = useThemeContext();
+  // Use the destructured elements or remove this line if they are not needed
+  console.log({ mode, setMode, theme });
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -25,10 +27,10 @@ export default function NavBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Git Web Scrapper
           </Typography>
-          <ThemeSwitch onChange={() => {setMode(mode === 'light' ? 'dark' : 'light')
+          {/* <ThemeSwitch onChange={() => {setMode(mode === 'light' ? 'dark' : 'light')
             console.log({theme, mode});
 
-          }} />
+          }} /> */}
         </Toolbar>
       </AppBar>
     </Box>

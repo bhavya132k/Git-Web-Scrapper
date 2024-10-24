@@ -5,17 +5,16 @@ import NavBar from "./components/NavBar";
 import SearchBar from "./components/SearchBar";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
 import useThemeContext from "./hooks/useThemeContext";
-// import Container from "@mui/material/Container";
-// import AppBar  from "@mui/material/AppBar";
-// import Stack from "@mui/material/Stack";
 
 function App() {
   const { theme } = useThemeContext();
-  
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
+      <Container maxWidth="xl">
+        <CssBaseline />
         <Router>
           <NavBar />
           <SearchBar />
@@ -24,6 +23,7 @@ function App() {
             <Route path="/repo/:repoId" element={<RepoDetails />} />
           </Routes>
         </Router>
+      </Container>
     </ThemeProvider>
   );
 }
