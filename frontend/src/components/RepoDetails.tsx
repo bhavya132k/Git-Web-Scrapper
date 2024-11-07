@@ -10,6 +10,7 @@ import {
   AccordionDetails,
   Avatar,
   Link,
+  Chip,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import data from "../data/dummy.json";
@@ -48,9 +49,6 @@ export default function RepoDetails() {
   const humanReadableDate = date.toLocaleString("en-US", options);
   console.log(humanReadableDate);
 
-    // Generate a random count between 1 and 100
-    const getRandomCount = () => Math.floor(Math.random() * 100) + 1;
-
   return (
     <Box display="flex" flexDirection="row" p={2}>
       <Box flex={1} p={2}>
@@ -86,7 +84,7 @@ export default function RepoDetails() {
       <Box flex={2} p={2} maxHeight={"100vh"}>
         <Card>
           <Box p={2}>
-            <Typography variant="h5">Dependency Tree</Typography>
+            <Typography variant="h5">Dependency Tree <Chip label="Total : 26" /></Typography>
             <Divider />
             <Box mt={2}>
               <Accordion>
@@ -95,7 +93,7 @@ export default function RepoDetails() {
                   aria-controls="panel1-content"
                   id="panel1-header"
                 >
-                  <Typography>Dependency 1 ({getRandomCount()})</Typography>
+                  <Typography>Dependency 1</Typography>
                 </AccordionSummary>
               </Accordion>
               <Accordion>
@@ -104,7 +102,7 @@ export default function RepoDetails() {
                   aria-controls="panel2-content"
                   id="panel2-header"
                 >
-                  <Typography>Dependency 2 ({getRandomCount()})</Typography>
+                  <Typography>Dependency 2</Typography>
                 </AccordionSummary>
               </Accordion>
               <Accordion>
@@ -113,7 +111,7 @@ export default function RepoDetails() {
                   aria-controls="panel3-content"
                   id="panel3-header"
                 >
-                  <Typography>Dependency 3 ({getRandomCount()})</Typography>
+                  <Typography>Dependency 3 <Chip label="2" /></Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Accordion>
@@ -122,7 +120,7 @@ export default function RepoDetails() {
                       aria-controls="subpanel1-content"
                       id="subpanel1-header"
                     >
-                      <Typography>Sub Dependency 3.1 ({getRandomCount()})</Typography>
+                      <Typography>Sub Dependency 3.1</Typography>
                     </AccordionSummary>
                   </Accordion>
                   <Accordion>
@@ -131,7 +129,7 @@ export default function RepoDetails() {
                       aria-controls="subpanel2-content"
                       id="subpanel2-header"
                     >
-                      <Typography>Sub Dependency 3.2 ({getRandomCount()})</Typography>
+                      <Typography>Sub Dependency 3.2</Typography>
                     </AccordionSummary>
                   </Accordion>
                 </AccordionDetails>
@@ -143,5 +141,3 @@ export default function RepoDetails() {
     </Box>
   );
 }
-
-

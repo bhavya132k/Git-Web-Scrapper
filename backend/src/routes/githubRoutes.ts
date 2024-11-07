@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { getUser } from '../controllers/githubController';
+import { getRepos } from '../controllers/githubController';
 
 const router = Router();
+router.get('/api/', getRepos);
 
-router.get('/api/', getUser);
+
 
 export default router;
