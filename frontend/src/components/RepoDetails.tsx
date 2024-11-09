@@ -13,12 +13,14 @@ import {
   Chip,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import data from "../data/dummy.json";
+
 import RepoCard from "./RepoCard";
+import { useRepoContext } from "../hooks/RepoProvider";
 
 export default function RepoDetails() {
+  const {repos} = useRepoContext();
   const { repoId } = useParams();
-  const repo = data.items.find((item) => item.id === Number(repoId));
+  const repo = repos.find((item) => item.id === Number(repoId));
 
   if (!repo) {
     return <Typography>Repository not found.</Typography>;
@@ -32,7 +34,7 @@ export default function RepoDetails() {
     return 100;
   };
   const dateStr = repo.updated_at;
-  const date = new Date(dateStr);
+  const date = dateStr ? new Date(dateStr) : "N/A";
 
   // Options for formatting the date
   const options: Intl.DateTimeFormatOptions = {
@@ -72,7 +74,7 @@ export default function RepoDetails() {
             {/* access "html_url" of owner and make the content a Link component to that user */}
             <RepoCard
               heading="Origin and Pedigree"
-              content={<Box><Avatar src={repo.owner.avatar_url} /> <Link href={repo.owner.url} >{repo.owner.login}</Link></Box>}
+              content={repo.owner ? <Box><Avatar src={repo.owner.avatar_url} /> <Link href={repo.owner.url} >{repo.owner.login}</Link></Box> : 'N/A'}
             />
             <RepoCard
               heading="License"

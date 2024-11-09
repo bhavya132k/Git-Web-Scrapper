@@ -8,22 +8,33 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import useThemeContext from "./hooks/useThemeContext";
 
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { RepoProvider } from "./hooks/RepoProvider";
+
+const qc = new QueryClient();
 function App() {
   const { theme } = useThemeContext();
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="xl">
-        <CssBaseline />
-        <Router>
-          <NavBar />
-          <SearchBar />
-          <Routes>
-            <Route path="/" element={<RepoTable />} />
-            <Route path="/repo/:repoId" element={<RepoDetails />} />
-          </Routes>
-        </Router>
-      </Container>
+      <QueryClientProvider client={qc}>
+        <Container maxWidth="xl">
+          <CssBaseline />
+          <Router>
+            <RepoProvider>
+              <NavBar />
+              <SearchBar />
+              <Routes>
+                <Route path="/" element={<RepoTable />} />
+                <Route path="/repo/:repoId" element={<RepoDetails />} />
+              </Routes>
+            </RepoProvider>
+          </Router>
+        </Container>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

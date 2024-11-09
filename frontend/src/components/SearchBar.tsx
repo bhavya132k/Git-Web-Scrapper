@@ -2,24 +2,23 @@ import * as React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
-import { Button, Chip, Backdrop, CircularProgress, Select } from "@mui/material";
+import { Button, Chip, Backdrop, CircularProgress } from "@mui/material";
+
+import { useRepoContext } from "../hooks/RepoProvider";
 
 export default function SearchBar() {
-  const [value, setValue] = React.useState<string[]>([]);
+  const { setValue, loading } = useRepoContext();
+  const [tags, setTags] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
   const [error, setError] = React.useState(false);
 
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
   const handleOpen = () => {
-    setOpen(true);
+    setValue(tags);
   };
 
   const handleTagChange = (_event: any, newValue: string[]) => {
     if (newValue.length <= 5) {
-      setValue(newValue);
+      setTags(newValue);
       setError(false);
     } else {
       setError(true);
@@ -27,17 +26,13 @@ export default function SearchBar() {
   };
 
   return (
-    <Stack
-      spacing={{ xs: 1, sm: 2 }}
-      direction="row"
-      useFlexGap
-    >
+    <Stack spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap>
       <Autocomplete
         multiple
         freeSolo
         id="tags-standard"
         options={[]}
-        value={value}
+        value={tags}
         inputValue={inputValue}
         onChange={handleTagChange}
         fullWidth
@@ -45,9 +40,9 @@ export default function SearchBar() {
           setInputValue(newInputValue);
         }}
         onKeyDown={(event) => {
-          if (event.key === 'Enter' && inputValue.trim() !== "") {
-            const newKeywords = [...value, inputValue.trim()].slice(0, 5);
-            setValue(newKeywords);
+          if (event.key === "Enter" && inputValue.trim() !== "") {
+            const newKeywords = [...tags, inputValue.trim()].slice(0, 5);
+            setTags(newKeywords);
             setInputValue("");
             setError(newKeywords.length > 5);
             event.preventDefault();
@@ -75,23 +70,16 @@ export default function SearchBar() {
           </>
         )}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpen}
-      >
+      <Button variant="contained" color="primary" onClick={handleOpen}>
         Search
       </Button>
 
       <Backdrop
-        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-        open={open}
-        onClick={handleClose}
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-
     </Stack>
-    
   );
 }

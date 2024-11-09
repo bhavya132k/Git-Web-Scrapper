@@ -1,14 +1,30 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  gridPageCountSelector,
+  GridPagination,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom"; // useNavigate in the parent component
-import data from "../data/dummy.json";
-import { Chip, Link, Tooltip, Typography } from "@mui/material";
+import {
+  Chip,
+  Link,
+  TablePaginationProps,
+  Tooltip,
+  Typography,
+  Pagination as MuiPagination,
+  TablePagination,
+} from "@mui/material";
+import { useRepoContext } from "../hooks/RepoProvider";
+import { Repo } from "../types/Repo";
 
 export default function RepoTable() {
   const navigate = useNavigate(); // Hook should be used here, in the parent component
 
-  const columns: GridColDef<(typeof rows)[number]>[] = [
+  const columns: GridColDef<Repo>[] = [
     {
       field: "id",
       headerName: "ID",
@@ -32,7 +48,9 @@ export default function RepoTable() {
       type: "string",
       width: 300,
       renderCell: (params) => (
-        <Tooltip title={params.row.description ? params.row.description : "N/A"}>
+        <Tooltip
+          title={params.row.description ? params.row.description : "N/A"}
+        >
           <Typography variant="body2" noWrap>
             {params.row.description ? params.row.description : "N/A"}
           </Typography>
@@ -50,9 +68,7 @@ export default function RepoTable() {
       headerName: "Origin and Pedigree",
       width: 160,
       sortable: false,
-      renderCell: (params) => (
-        <Chip label={params.row.owner.login ? params.row.owner.login : "N/A"} />
-      ),
+      renderCell: (params) => <Chip label={params.row.owner?.login ?? "N/A"} />,
     },
     {
       field: "updated_at",
@@ -96,8 +112,21 @@ export default function RepoTable() {
       ),
     },
   ];
+  const { repos, setPage } = useRepoContext();
 
-  const rows = data.items;
+  const rows = repos.map((repo) => {
+    return {
+      id: repo.id,
+      full_name: repo.full_name,
+      description: repo.description,
+      stargazers_count: repo.stargazers_count,
+      owner: repo.owner,
+      updated_at: repo.updated_at,
+      license: repo.license,
+      html_url: repo.html_url,
+    };
+  });
+
 
   return (
     <Box sx={{ height: "90%", width: "100%" }}>
@@ -108,12 +137,19 @@ export default function RepoTable() {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 10,
+              pageSize: 20,
             },
           },
         }}
-        pageSizeOptions={[5, 10, 25]}
         disableRowSelectionOnClick
+        pagination
+        pageSizeOptions={[20]}
+        onPaginationModelChange={(model) => {
+          // only try setting the page if the page is not in pages fetched already
+          if (model.page > 0) {
+            setPage(model.page);
+          }
+        }}
       />
     </Box>
   );
