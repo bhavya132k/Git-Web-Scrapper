@@ -24,11 +24,11 @@ export default function SearchBar() {
   };
 
   const handleTagChange = (_event: any, newValue: string[]) => {
-    if (newValue.length <= 5) {
+    if (newValue.length <= 4) {
       setTags(newValue);
       setError({ error: false, helperText: "" });
     } else {
-      setError({ error: true, helperText: "You can only add up to 5 keywords." });
+      setError({ error: true, helperText: "You can only add up to 4 keywords." });
     }
   };
 
@@ -55,12 +55,12 @@ export default function SearchBar() {
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" && inputValue.trim() !== "") {
-            const newKeywords = [...tags, inputValue.trim()].slice(0, 5);
+            const newKeywords = [...tags, inputValue.trim()].slice(0, 4);
             setTags(newKeywords);
             setInputValue("");
             setError({
-              error: newKeywords.length > 5,
-              helperText: newKeywords.length > 5 ? "You can only add up to 5 keywords." : ""
+              error: newKeywords.length > 4,
+              helperText: newKeywords.length > 4 ? "You can only add up to 4 keywords." : ""
             });
             event.preventDefault();
           }
