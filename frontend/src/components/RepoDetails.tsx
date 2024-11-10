@@ -61,10 +61,12 @@ export default function RepoDetails() {
             {/* use card instead of chip  */}
             <RepoCard
               heading="Pluggability"
+              content="Pluggability score is based on stars,forks and keywords (plugin, API) in description with specified thresholds."
               score={calculatePluggabilityScore()}
             />
             <RepoCard
               heading="Extensibility"
+              content="Extensibility score is calculated using forks,stars and extensibility criteria (extensible, module, framework, template) with defined thresholds."
               score={calculateExtensibilityScore()}
             />
             <RepoCard

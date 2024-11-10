@@ -10,18 +10,25 @@ export default function SearchBar() {
   const { setValue, loading } = useRepoContext();
   const [tags, setTags] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState({ error: false , helperText: "" });
 
   const handleOpen = () => {
+    if (tags.length === 0) {
+      setError({
+        error: true,
+        helperText: "Please enter at least one keyword.",
+      });
+      return;
+    }
     setValue(tags);
   };
 
   const handleTagChange = (_event: any, newValue: string[]) => {
     if (newValue.length <= 5) {
       setTags(newValue);
-      setError(false);
+      setError({ error: false, helperText: "" });
     } else {
-      setError(true);
+      setError({ error: true, helperText: "You can only add up to 5 keywords." });
     }
   };
 
@@ -31,7 +38,14 @@ export default function SearchBar() {
         multiple
         freeSolo
         id="tags-standard"
-        options={[]}
+        options={[
+          "license:MIT",
+          "license:Apache-2.0",
+          "license:GPL-3.0",
+          "license:BSD-3-Clause",
+          "license:BSD-2-Clause",
+          "license:LGPL-3.0",
+        ]}
         value={tags}
         inputValue={inputValue}
         onChange={handleTagChange}
@@ -44,7 +58,10 @@ export default function SearchBar() {
             const newKeywords = [...tags, inputValue.trim()].slice(0, 5);
             setTags(newKeywords);
             setInputValue("");
-            setError(newKeywords.length > 5);
+            setError({
+              error: newKeywords.length > 5,
+              helperText: newKeywords.length > 5 ? "You can only add up to 5 keywords." : ""
+            });
             event.preventDefault();
           }
         }}
@@ -54,8 +71,8 @@ export default function SearchBar() {
             {...params}
             label="Keywords"
             placeholder=""
-            error={error}
-            helperText={error ? "You can only add up to 5 keywords." : ""}
+            error={error.error}
+            helperText={error.helperText}
           />
         )}
         renderTags={(value, getTagProps) => (
@@ -80,6 +97,7 @@ export default function SearchBar() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
+
     </Stack>
   );
 }

@@ -2,24 +2,18 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
   DataGrid,
-  GridColDef,
-  gridPageCountSelector,
-  GridPagination,
-  useGridApiContext,
-  useGridSelector,
+  GridColDef
 } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom"; // useNavigate in the parent component
 import {
   Chip,
   Link,
-  TablePaginationProps,
   Tooltip,
-  Typography,
-  Pagination as MuiPagination,
-  TablePagination,
+  Typography
 } from "@mui/material";
 import { useRepoContext } from "../hooks/RepoProvider";
 import { Repo } from "../types/Repo";
+import SearchBar from "./SearchBar";
 
 export default function RepoTable() {
   const navigate = useNavigate(); // Hook should be used here, in the parent component
@@ -110,7 +104,7 @@ export default function RepoTable() {
           View DETAILS
         </Button>
       ),
-    },
+    }
   ];
   const { repos, setPage } = useRepoContext();
 
@@ -130,6 +124,7 @@ export default function RepoTable() {
 
   return (
     <Box sx={{ height: "90%", width: "100%" }}>
+      <SearchBar />
       <DataGrid
         getRowId={(row) => row.id}
         rows={rows}

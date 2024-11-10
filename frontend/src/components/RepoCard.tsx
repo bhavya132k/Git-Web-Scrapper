@@ -18,13 +18,14 @@ const RepoCard: React.FC<RepoCardProps> = ({
         title= {heading}
       />
       <CardContent >
+        <Typography variant="body2" color="textSecondary">{content}</Typography>
         {score !== undefined ? (
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body1" color="primary">
             Score: {score}
           </Typography>
         ) : (
-          <Typography variant="body2" color="textSecondary">
-            {content}
+          <Typography variant="body1" color="primary">
+            N/A 
           </Typography>
         )}
       </CardContent>

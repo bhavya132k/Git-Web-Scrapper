@@ -26,7 +26,6 @@ function App() {
           <Router>
             <RepoProvider>
               <NavBar />
-              <SearchBar />
               <Routes>
                 <Route path="/" element={<RepoTable />} />
                 <Route path="/repo/:repoId" element={<RepoDetails />} />
