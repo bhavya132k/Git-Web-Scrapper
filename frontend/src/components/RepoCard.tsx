@@ -19,15 +19,9 @@ const RepoCard: React.FC<RepoCardProps> = ({
       />
       <CardContent >
         <Typography variant="body2" color="textSecondary">{content}</Typography>
-        {score !== undefined ? (
           <Typography variant="body1" color="primary">
-            Score: {score}
+            {score ? `Score: ${score}` : ""} 
           </Typography>
-        ) : (
-          <Typography variant="body1" color="primary">
-            N/A 
-          </Typography>
-        )}
       </CardContent>
     </Card>
   );
