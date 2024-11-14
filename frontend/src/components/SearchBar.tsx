@@ -10,7 +10,7 @@ export default function SearchBar() {
   const { setValue, loading } = useRepoContext();
   const [tags, setTags] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
-  const [error, setError] = React.useState({ error: false , helperText: "" });
+  const [error, setError] = React.useState({ error: false, helperText: "" });
 
   const handleOpen = () => {
     if (tags.length === 0) {
@@ -24,11 +24,14 @@ export default function SearchBar() {
   };
 
   const handleTagChange = (_event: any, newValue: string[]) => {
-    if (newValue.length <= 4) {
+    if (newValue.length <= 5) {
       setTags(newValue);
       setError({ error: false, helperText: "" });
     } else {
-      setError({ error: true, helperText: "You can only add up to 4 keywords." });
+      setError({
+        error: true,
+        helperText: "You can only add up to 5 keywords.",
+      });
     }
   };
 
@@ -39,12 +42,19 @@ export default function SearchBar() {
         freeSolo
         id="tags-standard"
         options={[
-          "license:MIT",
-          "license:Apache-2.0",
-          "license:GPL-3.0",
-          "license:BSD-3-Clause",
-          "license:BSD-2-Clause",
-          "license:LGPL-3.0",
+          "license:agpl-3.0",
+          "license:apache-2.0",
+          "license:bsd-2-clause",
+          "license:bsd-3-clause",
+          "license:bsl-1.0",
+          "license:cc0-1.0",
+          "license:epl-2.0",
+          "license:gpl-2.0",
+          "license:gpl-3.0",
+          "license:lgpl-2.1",
+          "license:mit",
+          "license:mpl-2.0",
+          "license:unlicense",
         ]}
         value={tags}
         inputValue={inputValue}
@@ -55,12 +65,15 @@ export default function SearchBar() {
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" && inputValue.trim() !== "") {
-            const newKeywords = [...tags, inputValue.trim()].slice(0, 4);
+            const newKeywords = [...tags, inputValue.trim()].slice(0, 5);
             setTags(newKeywords);
             setInputValue("");
             setError({
-              error: newKeywords.length > 4,
-              helperText: newKeywords.length > 4 ? "You can only add up to 4 keywords." : ""
+              error: newKeywords.length > 5,
+              helperText:
+                newKeywords.length > 5
+                  ? "You can only add up to 5 keywords."
+                  : "",
             });
             event.preventDefault();
           }
@@ -97,7 +110,6 @@ export default function SearchBar() {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-
     </Stack>
   );
 }
