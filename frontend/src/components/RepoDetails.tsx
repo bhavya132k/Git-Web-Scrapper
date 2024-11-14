@@ -80,7 +80,7 @@ export default function RepoDetails() {
             />
             <RepoCard
               heading="License"
-              content={repo.license?.name}
+              content={repo.license ? repo.license.name : "N/A"}
             />
           </Stack>
         </Box>
@@ -115,7 +115,7 @@ export default function RepoDetails() {
                   aria-controls="panel3-content"
                   id="panel3-header"
                 >
-                  <Typography>Dependency 3 <Chip label="2" /></Typography>
+                  <Typography>Dependency 3</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Accordion>

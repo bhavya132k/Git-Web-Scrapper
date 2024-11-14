@@ -10,7 +10,7 @@ interface RepoCardProps {
 const RepoCard: React.FC<RepoCardProps> = ({
   heading,
   score,
-  content,
+  content
 }) => {
   return (
     <Card>
