@@ -10,7 +10,7 @@ import SearchBar from "./SearchBar";
 export default function RepoTable() {
   const navigate = useNavigate(); // Hook should be used here, in the parent component
 
-  const columns: GridColDef<Repo>[] = [
+  const columns: GridColDef[] = [
     {
       field: "full_name",
       headerName: "Repo Name",

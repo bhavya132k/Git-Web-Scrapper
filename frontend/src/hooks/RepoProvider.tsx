@@ -11,7 +11,9 @@ type RepoContextType = {
   fetchRepos: () => void;
 };
 
-export const RepoContext = createContext<RepoContextType | undefined>(undefined);
+export const RepoContext = createContext<RepoContextType | undefined>(
+  undefined
+);
 
 export const useRepoContext = () => {
   const context = useContext(RepoContext);
@@ -21,7 +23,9 @@ export const useRepoContext = () => {
   return context;
 };
 
-export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [value, setValue] = useState<string[]>([]);
   const [page, setPage] = useState<number>(1);
   const [repos, setRepos] = useState<Repo[]>([]);
@@ -30,12 +34,15 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchRepos = (clearRepos: boolean = false) => {
     setLoading(true);
-    fetch(`http://localhost:3000/api?keywords=${value.join(",")}&page=${page}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `http://localhost:3000/api?keywords=${value.join(",")}&page=${page}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((response) => {
         if (response.ok) {
           response.json().then((result) => {
@@ -45,7 +52,7 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
               setRepos((prevRepos) => [...prevRepos, ...result.items]);
             }
-            console.log(repos)
+            console.log(repos);
             setLoading(false);
           });
         } else {
@@ -59,22 +66,32 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    fetchRepos(true);
-    setPages([]);
+
+    if (value.length !== 0) {
+      fetchRepos(true);
+      setPages([]);
+    }
+    return () => {
+      setRepos([]);
+    };
   }, [value]);
 
   useEffect(() => {
     console.log("Page:", page);
     if (!pages.includes(page)) {
-      setPages([...pages, page, page + 1]);
-      fetchRepos(); 
-      setPage(page + 1);
+      setPages([...pages, page]);
       fetchRepos();
     }
+
+    return () => {
+      setPages([]);
+    };
   }, [page]);
 
   return (
-    <RepoContext.Provider value={{ value, setValue, page, setPage, repos, loading, fetchRepos }}>
+    <RepoContext.Provider
+      value={{ value, setValue, page, setPage, repos, loading, fetchRepos }}
+    >
       {children}
     </RepoContext.Provider>
   );
