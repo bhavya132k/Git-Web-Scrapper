@@ -1,16 +1,8 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import {
-  DataGrid,
-  GridColDef
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom"; // useNavigate in the parent component
-import {
-  Chip,
-  Link,
-  Tooltip,
-  Typography
-} from "@mui/material";
+import { Chip, Link, Tooltip, Typography } from "@mui/material";
 import { useRepoContext } from "../hooks/RepoProvider";
 import { Repo } from "../types/Repo";
 import SearchBar from "./SearchBar";
@@ -20,14 +12,11 @@ export default function RepoTable() {
 
   const columns: GridColDef<Repo>[] = [
     {
-      field: "id",
-      headerName: "ID",
-      width: 70,
-      hideable: true,
-    },
-    {
       field: "full_name",
       headerName: "Repo Name",
+      sortable: false,
+      filterable: false,
+      hideable: false,
       width: 250,
       type: "string",
       renderCell: (params) => (
@@ -40,6 +29,9 @@ export default function RepoTable() {
       field: "description",
       headerName: "Description",
       type: "string",
+      sortable: false,
+      filterable: false,
+      hideable: false,
       width: 300,
       renderCell: (params) => (
         <Tooltip
@@ -52,21 +44,20 @@ export default function RepoTable() {
       ),
     },
     {
-      field: "stargazers_count",
-      headerName: "stars",
-      type: "number",
-      width: 40,
-    },
-    {
       field: "owner.login",
       headerName: "Origin and Pedigree",
       width: 160,
       sortable: false,
+      filterable: false,
+      hideable: false,
       renderCell: (params) => <Chip label={params.row.owner?.login ?? "N/A"} />,
     },
     {
       field: "updated_at",
-      headerName: "Support ( last updated )",
+      headerName: "Support",
+      sortable: false,
+      filterable: false,
+      hideable: false,
       width: 250,
     },
     {
@@ -74,6 +65,8 @@ export default function RepoTable() {
       headerName: "License",
       width: 200,
       sortable: false,
+      filterable: false,
+      hideable: false,
       renderCell: (params) => (
         <Chip
           label={
@@ -91,6 +84,7 @@ export default function RepoTable() {
       width: 200,
       sortable: false,
       filterable: false,
+      hideable: false,
       type: "actions",
       renderCell: (params) => (
         <Button
@@ -101,10 +95,10 @@ export default function RepoTable() {
             navigate(`/repo/${params.row.id}`);
           }}
         >
-          View DETAILS
+          View Details
         </Button>
       ),
-    }
+    },
   ];
   const { repos, setPage } = useRepoContext();
 
@@ -120,7 +114,6 @@ export default function RepoTable() {
       html_url: repo.html_url,
     };
   });
-
 
   return (
     <Box sx={{ height: "90%", width: "100%" }}>
