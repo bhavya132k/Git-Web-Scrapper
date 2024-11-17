@@ -18,6 +18,7 @@ import RepoCard from "./RepoCard";
 import { useRepoContext } from "../hooks/RepoProvider";
 import { useEffect, useState } from "react";
 import { Repo } from "../types/Repo";
+import { useQuery } from "@tanstack/react-query";
 
 const calculatePluggabilityScore = (repo: Repo) => {
   let score = 0;
@@ -92,12 +93,23 @@ const calculateExtensibilityScore = (repo: Repo) => {
   return score;
 };
 
+const fetchData = async (owner: string, repo_name: string) => {
+  const response = await fetch(
+    `http://localhost:3000/get-dependencies/${owner}/${repo_name}`
+  ); // replace with your API URL
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json();
+};
+
 export default function RepoDetails() {
   const { repos } = useRepoContext();
   const { repoId } = useParams();
   const repo = repos.find((item) => item.id === Number(repoId));
   const [pluggability, setPluggability] = useState<string | number>("N/A");
   const [extensibility, setExtensibility] = useState<string | number>("N/A");
+  const [total, setTotal] = useState<number>(0);
 
   if (!repo) {
     return <Typography>Repository not found.</Typography>;
@@ -129,6 +141,15 @@ export default function RepoDetails() {
   // Convert to human-readable format
   const humanReadableDate = date.toLocaleString("en-US", options);
   console.log(humanReadableDate);
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ["fetchData"],
+    queryFn: () => {
+      if (repo.owner && repo.owner.login && repo.name) {
+        return fetchData(repo.owner.login, repo.name);
+      }
+      return Promise.reject("Invalid repository owner or name");
+    },
+  });
 
   return (
     <Box display="flex" flexDirection="row" p={2}>
@@ -176,29 +197,27 @@ export default function RepoDetails() {
       <Box flex={2} p={2} maxHeight={"100vh"}>
         <Card>
           <Box p={2}>
-            <Typography variant="h5">
-              Dependency Tree <Chip label="Total : 5" />
-            </Typography>
+            <Typography variant="h5">Dependency Tree</Typography>
             <Divider />
             <Box mt={2}>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ArrowDropDownIcon />}
-                  aria-controls="panel1-content"
-                  id="panel1-header"
-                >
-                  <Typography>Dependency 1</Typography>
-                </AccordionSummary>
-              </Accordion>
-              <Accordion>
-                <AccordionSummary
-                  expandIcon={<ArrowDropDownIcon />}
-                  aria-controls="panel2-content"
-                  id="panel2-header"
-                >
-                  <Typography>Dependency 2</Typography>
-                </AccordionSummary>
-              </Accordion>
+              {isLoading && <Typography>Loading...</Typography>}
+              {isError && <Typography>Error: {error.toString()}</Typography>}
+              {data &&
+                data.deps.map((dep: any) => (
+                  <Accordion key={dep.name}>
+                    <AccordionSummary
+                      expandIcon={<ArrowDropDownIcon />}
+                      aria-controls="panel1-content"
+                      id="panel1-header"
+                    >
+                      <Typography>
+                        {dep.name} <Chip label={dep.version ?? "N/A"} />
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails></AccordionDetails>
+                  </Accordion>
+                ))}
+
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ArrowDropDownIcon />}

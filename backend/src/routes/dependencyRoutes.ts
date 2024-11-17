@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { generateDependencyTree } from '../controllers/dependencyController';
+import { getDependencies } from '../controllers/dependencyController';
+
 
 const router = Router();
 
-router.post('/generate-dependency-tree', generateDependencyTree);
+router.get('/get-dependencies/:owner/:reponame', getDependencies);
 
 export default router;

@@ -1,92 +1,84 @@
 import { Request, Response } from 'express';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs';
+import axios from 'axios';
+import { GITHUB_API_TOKEN } from '../config';
 
-const execAsync = promisify(exec);
+// Update Dependency interface
+interface Dependency {
+  name: string;
+  version: string | null;
+  downloadURL: string;
+}
 
-export const generateDependencyTree = async (req: Request, res: Response) => {
-  const { repositoryUrl } = req.body;
+interface DependencyResponse {
+  count: number;
+  deps: Dependency[];
+}
 
-  if (!repositoryUrl) {
-    return res.status(400).json({ error: 'Repository URL is required' });
+// Define types for SBOM structure
+interface Package {
+  name: string;
+  SPDXID: string;
+  versionInfo?: string;
+  downloadLocation: string;
+}
+
+interface Relationship {
+  spdxElementId: string;
+  relatedSpdxElement: string;
+  relationshipType: string;
+}
+
+interface SBOM {
+  packages: Package[];
+  relationships: Relationship[];
+}
+
+export const getDependencies = async (req: Request, res: Response) => {
+  const { owner, reponame } = req.params;
+
+  if (typeof owner !== 'string' || typeof reponame !== 'string') {
+    return res.status(400).json({ error: 'Invalid owner or repo' });
   }
-
-  const tempRepoPath = path.join(__dirname, '../../temp-repo');
 
   try {
-     // Delete the temp-repo directory if it exists
-     if (fs.existsSync(tempRepoPath)) {
-      await execAsync(`rm -rf ${tempRepoPath}`);
-      console.log('Deleted existing temp-repo directory');
+    const response = await axios.get(
+      `https://api.github.com/repos/${owner}/${reponame}/dependency-graph/sbom`,
+      {
+        headers: {
+          Authorization: `Bearer ${GITHUB_API_TOKEN}`,
+        },
+      }
+    );
+
+    const extractDependencies = (sbom: SBOM): DependencyResponse => {
+      // Filter out the main package and get only dependencies
+      const dependencies = sbom.packages
+        .filter(pkg => pkg.SPDXID !== 'SPDXRef-DOCUMENT')
+        .map(pkg => ({
+          name: pkg.name,
+          version: pkg.versionInfo || null,
+          downloadURL: pkg.downloadLocation === 'NOASSERTION' 
+            ? `https://www.npmjs.com/package/${pkg.name}` // fallback URL
+            : pkg.downloadLocation
+        }));
+
+      return {
+        count: dependencies.length,
+        deps: dependencies
+      };
+    };
+
+    try {
+      const dependencyResponse = extractDependencies(response.data.sbom);
+      res.json(dependencyResponse);
+    } catch (parseError) {
+      console.error('Error parsing SBOM:', parseError);
+      res.status(500).json({ error: 'Invalid SBOM structure' });
     }
-
-    console.log(`Cloning repository from ${repositoryUrl} to ${tempRepoPath}`);
-    // Clone the repository
-    await execAsync(`git clone ${repositoryUrl} ${tempRepoPath}`);
-    
-    // Change directory to the cloned repository
-    process.chdir(tempRepoPath);
-    console.log(`Changed directory to ${tempRepoPath}`);
-
-    // Log the contents of the package.json file
-    const packageJsonPath = path.join(tempRepoPath, 'package.json');
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = fs.readFileSync(packageJsonPath, 'utf-8');
-      console.log('package.json contents:', packageJson);
-    } else {
-      console.error('package.json file not found');
-      throw new Error('package.json file not found');
-    }
-
-    // Install dependencies using yarn
-    await execAsync('yarn install');
-    console.log('Dependencies installed');
-
-    // Get the dependency tree
-    const { stdout } = await execAsync('yarn list --json');
-    console.log('Dependency tree generated');
-
-    // Parse the dependency tree
-    const dependencyTree = JSON.parse(stdout);
-    console.log(dependencyTree)
-    // Format the dependency tree
-    const formattedTree = formatDependencyTree(dependencyTree);
-
-    // Change back to the original directory and remove the cloned repository
-    process.chdir('..');
-    await execAsync(`rm -rf ${tempRepoPath}`);
-    console.log('Cleaned up temporary repository');
-
-    res.json(formattedTree);
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ error: 'Failed to generate dependency tree' });
+    res.status(500).json({
+      error: 'System is offline or failed to fetch data. Please check your internet connection or GitHub API.',
+    });
   }
-};
-
-const formatDependencyTree = (tree: any) => {
-  const formattedTree: any = { directDependencies: {} };
-
-  const traverseDependencies = (dependencies: any, parent: any) => {
-    if (!dependencies) {
-      return;
-    }
-
-    for (const [name, info] of Object.entries(dependencies)) {
-      if (!parent[name]) {
-        parent[name] = { count: 0, version: (info as any).version };
-      }
-      parent[name].count += 1;
-
-      if ((info as any).dependencies) {
-        traverseDependencies((info as any).dependencies, parent);
-      }
-    }
-  };
-
-  traverseDependencies(tree.devDependencies, formattedTree.directDependencies);
-
-  return formattedTree;
 };

@@ -55,25 +55,6 @@ export const getRepos = async (req: Request, res: Response) => {
     }
 }
 
-export const getDependencies = async (req: Request, res: Response) => {
-
-    const owner = req.query.owner;
-    const repo = req.query.repo;
-    if (typeof owner !== 'string' || typeof repo !== 'string') {
-        return res.status(400).json({ error: 'Invalid owner or repo' });
-    }
-    try {
-        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/dependency-graph/sbom`, {
-            headers: {
-                Authorization: `Bearer ${GITHUB_API_TOKEN}`,
-            },
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(404).json({ error: 'System is offline Check your internet' });
-    }
-}
 
 
 
