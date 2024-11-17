@@ -3,28 +3,29 @@ import { Card, CardContent, CardHeader, Typography } from "@mui/material";
 
 interface RepoCardProps {
   heading: string;
-  score?: number;
+  score?: string | number;
   content?: React.ReactNode;
 }
 
-const RepoCard: React.FC<RepoCardProps> = ({
+const RepoCard: React.FC<RepoCardProps> = React.memo(({
   heading,
   score,
   content
 }) => {
   return (
     <Card>
-      <CardHeader
-        title= {heading}
-      />
-      <CardContent >
+      <CardHeader title={heading} />
+      <CardContent>
         <Typography variant="body2" color="textSecondary">{content}</Typography>
+        {score && (
           <Typography variant="body1" color="primary">
-            {score ? `Score: ${score}` : ""} 
+            Score: {score} /100
           </Typography>
+        )}
       </CardContent>
     </Card>
   );
-};
+});
 
+RepoCard.displayName = 'RepoCard';
 export default RepoCard;

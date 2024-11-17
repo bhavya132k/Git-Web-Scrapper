@@ -2,21 +2,20 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import RepoTable from "./components/RepoTable";
 import RepoDetails from "./components/RepoDetails";
 import NavBar from "./components/NavBar";
-import SearchBar from "./components/SearchBar";
-import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
-import useThemeContext from "./hooks/useThemeContext";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RepoProvider } from "./hooks/RepoProvider";
 
 const qc = new QueryClient();
 function App() {
-  const { theme } = useThemeContext();
+  const theme = createTheme({
+    palette: {
+      mode: "dark",
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>

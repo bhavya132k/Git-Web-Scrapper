@@ -7,10 +7,16 @@ import { Button, Chip, Backdrop, CircularProgress } from "@mui/material";
 import { useRepoContext } from "../hooks/RepoProvider";
 
 export default function SearchBar() {
-  const { setValue, loading } = useRepoContext();
+  const { value, setValue, loading } = useRepoContext();
   const [tags, setTags] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
   const [error, setError] = React.useState({ error: false, helperText: "" });
+
+  React.useEffect(() => {
+    if (value.length > 0) {
+      setTags(value);
+    }
+  }, [value]);
 
   const handleOpen = () => {
     if (tags.length === 0) {
@@ -60,6 +66,12 @@ export default function SearchBar() {
         inputValue={inputValue}
         onChange={handleTagChange}
         fullWidth
+        onBlur={
+          //close the autocomplete dropdown when the user clicks outside
+          (event) => {
+            event.target.blur();
+          }
+        }
         onInputChange={(_event, newInputValue) => {
           setInputValue(newInputValue);
         }}
