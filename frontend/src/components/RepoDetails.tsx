@@ -88,7 +88,7 @@ export default function RepoDetails() {
       <Box flex={2} p={2} maxHeight={"100vh"}>
         <Card>
           <Box p={2}>
-            <Typography variant="h5">Dependency Tree <Chip label="Total : 26" /></Typography>
+            <Typography variant="h5">Dependency Tree <Chip label="Total : 5" /></Typography>
             <Divider />
             <Box mt={2}>
               <Accordion>
