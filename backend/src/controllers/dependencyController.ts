@@ -7,6 +7,8 @@ interface Dependency {
   url: string;
 }
 
+
+
 export const getDependencies = async (req: Request, res: Response) => {
   const { owner, repoName } = req.params; // Get repo owner and name from route params
 
@@ -17,7 +19,9 @@ export const getDependencies = async (req: Request, res: Response) => {
   const BASE_URL = `https://github.com/${owner}/${repoName}/network/dependencies`;
 
   try {
-    const dependencies = await scrapeDependencies(BASE_URL);
+    const all_dependencies = await scrapeDependencies(BASE_URL);
+    // remove duplicates from dependencies
+    const dependencies = removeDuplicates(all_dependencies);
     res.json({
       totalCount: dependencies.length,
       dependencies: dependencies,
@@ -29,7 +33,7 @@ export const getDependencies = async (req: Request, res: Response) => {
 };
 
 async function scrapeDependencies(BASE_URL: string): Promise<Dependency[]> {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
   await page.goto(BASE_URL, { waitUntil: "networkidle2" });
@@ -102,4 +106,12 @@ async function goToNextPage(page: Page): Promise<void> {
   await page.click(".next_page");
 
   await page.waitForNavigation({ waitUntil: "domcontentloaded" });
+}
+
+
+function removeDuplicates(dependencies: Dependency[]): Dependency[] {
+  return dependencies.filter((dep, index, self) => {
+    const firstIndex = self.findIndex((d) => d.name === dep.name);
+    return firstIndex === index;
+  });
 }
