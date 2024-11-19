@@ -4,6 +4,6 @@ import { getDependencies } from '../controllers/dependencyController';
 
 const router = Router();
 
-router.get('/get-dependencies/:owner/:reponame', getDependencies);
+router.get('/scrape-dependencies/:owner/:repoName', getDependencies);
 
 export default router;
