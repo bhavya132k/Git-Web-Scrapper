@@ -13,6 +13,7 @@ import {
   Chip,
   Backdrop,
   CircularProgress,
+  Skeleton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RepoCard from "./RepoCard";
@@ -25,11 +26,8 @@ import {
 import ErrorComponent from "./ErrorComponent";
 import { getHumanReadableDate } from "../utils";
 
-
-
 const fetchData = async (owner: string, repo_name: string) => {
   const response = await fetch(
-
     `http://localhost:3000/scrape-dependencies/${owner}/${repo_name}`
   ); // replace with your API URL
   if (!response.ok) {
@@ -96,6 +94,7 @@ export default function RepoDetails() {
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
+  const [error, setError] = useState<string | null>(null);
 
   if (!repo) {
     return <ErrorComponent message="Repository not found." />;
@@ -122,6 +121,7 @@ export default function RepoDetails() {
         }
       } catch (error: any) {
         dispatch({ type: "FETCH_FAILURE", payload: error.message });
+        setError(error.message);
       }
     };
 
@@ -130,12 +130,9 @@ export default function RepoDetails() {
     }
 
     return () => {
-      
       console.log("Cleanup");
     };
   }, [repo]);
-
-
 
   const handleAccordionClick = async (dep: Dependency, level: number) => {
     const urlSplit = dep.url.split("/");
@@ -178,7 +175,11 @@ export default function RepoDetails() {
           >
             <Typography>
               {dep.name}{" "}
-              <Chip variant="outlined" size="small" label={dep.version ?? "N/A"} />
+              <Chip
+                variant="outlined"
+                size="small"
+                label={"Version: " + dep.version}
+              />
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -214,7 +215,12 @@ export default function RepoDetails() {
             />
             <RepoCard
               heading="Support"
-              content={"last_updated at :" + getHumanReadableDate(repo.updated_at ? repo.updated_at.toString() : "N/A")}
+              content={
+                "last_updated at :" +
+                getHumanReadableDate(
+                  repo.updated_at ? repo.updated_at.toString() : "N/A"
+                )
+              }
             />
             <RepoCard
               heading="Origin and Pedigree"
@@ -238,19 +244,27 @@ export default function RepoDetails() {
       </Box>
       <Box flex={2} p={2} maxHeight={"100vh"}>
         {state.isLoading ? (
-          <Backdrop open={true}>
-            <CircularProgress />
-          </Backdrop>
+          <>
+            {[1,2,3,4,5,6,7,8,9,10].map((item) => (
+              <Skeleton key={item} animation="wave" height={50} />
+            ))}
+          </>
         ) : state.isError ? (
           <ErrorComponent
-            message={"Error Fetching dependencies because of" + state.error}
+            message={"Error Fetching dependencies because of " + state.error}
           />
+        ) : state.data?.dependencies.length === 0 ? (
+          <ErrorComponent message="No dependencies found for this repository." />
         ) : (
           <Card>
             <Box p={2}>
               <Typography variant="h5">
                 Dependency Tree{" "}
-                <Chip variant="outlined"  label={total} color="primary" />
+                <Chip
+                  variant="outlined"
+                  label={"Total Dependencies: " + total}
+                  color="primary"
+                />
               </Typography>
               <Divider />
               <Box mt={2}>
