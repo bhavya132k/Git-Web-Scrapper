@@ -3,9 +3,10 @@ import Button from "@mui/material/Button";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom"; // useNavigate in the parent component
 import { Chip, Link, Tooltip, Typography } from "@mui/material";
-import { useRepoContext } from "../hooks/RepoProvider";
+import { useRepoContext } from "../hooks/useRepoContext";
 import { Repo } from "../types/Repo";
 import SearchBar from "./SearchBar";
+import {getHumanReadableDate} from "../utils"
 
 export default function RepoTable() {
   const navigate = useNavigate(); // Hook should be used here, in the parent component
@@ -59,6 +60,11 @@ export default function RepoTable() {
       filterable: false,
       hideable: false,
       width: 250,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {params.row.updated_at ? getHumanReadableDate(params.row.updated_at) : "N/A"}
+        </Typography>
+      ),
     },
     {
       field: "license.name",

@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RepoProvider } from "./hooks/RepoProvider";
+import { RepoProvider } from "./hooks/useRepoContext";
 
 const qc = new QueryClient();
 function App() {

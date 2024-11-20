@@ -16,13 +16,14 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RepoCard from "./RepoCard";
-import { useRepoContext } from "../hooks/RepoProvider";
+import { useRepoContext } from "../hooks/useRepoContext";
 import { useEffect, useState, useReducer } from "react";
 import {
   calculatePluggabilityScore,
   calculateExtensibilityScore,
 } from "../utils";
 import ErrorComponent from "./ErrorComponent";
+import { getHumanReadableDate } from "../utils";
 
 const fetchData = async (owner: string, repo_name: string) => {
   const response = await fetch(
@@ -126,21 +127,7 @@ export default function RepoDetails() {
     }
   }, [repo]);
 
-  const dateStr = repo.updated_at;
-  const date = dateStr ? new Date(dateStr) : "N/A";
 
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZoneName: "short",
-  };
-
-  const humanReadableDate = date.toLocaleString("en-US", options);
-  console.log(humanReadableDate);
 
   const handleAccordionClick = async (dep: Dependency, level: number) => {
     const urlSplit = dep.url.split("/");
@@ -219,7 +206,7 @@ export default function RepoDetails() {
             />
             <RepoCard
               heading="Support"
-              content={"last_updated at :" + humanReadableDate}
+              content={"last_updated at :" + getHumanReadableDate(repo.updated_at ? repo.updated_at.toString() : "N/A")}
             />
             <RepoCard
               heading="Origin and Pedigree"

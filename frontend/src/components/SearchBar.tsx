@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import { Button, Chip, Backdrop, CircularProgress } from "@mui/material";
 
-import { useRepoContext } from "../hooks/RepoProvider";
+import { useRepoContext } from "../hooks/useRepoContext";
 
 export default function SearchBar() {
   const { value, setValue, loading } = useRepoContext();
