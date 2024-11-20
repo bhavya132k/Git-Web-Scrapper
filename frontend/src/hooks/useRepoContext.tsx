@@ -5,11 +5,9 @@ type RepoContextType = {
   value: string[];
   setValue: React.Dispatch<React.SetStateAction<string[]>>;
   page: number;
-  addPage: (page: number) => void;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   repos: Repo[];
   loading: boolean;
-  fetchRepos: () => void;
   error: boolean;
   errorMessage: string;
   totalCount: number;
@@ -36,7 +34,6 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [pages, setPages] = useState<number[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
 
   const controller = new AbortController();
@@ -95,9 +92,7 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   useEffect(() => {
-
     fetchRepos(true);
-    setPages([]);
     setPage(1);
     return () => {
       abortFetching();
@@ -105,27 +100,19 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [value]);
 
-  useEffect(() => {
-    console.log("Page:", page);
-    if (!pages.includes(page)) {
-      setPages([...pages, page]);
-      fetchRepos();
-    }
+  const oldPage = page;
 
+  useEffect(() => {
+
+    fetchRepos(true);
     setPage(page);
+    console.log(`Page changed from ${oldPage} to ${page}`);
 
     return () => {
       abortFetching();
-      setPages([]);
+      setRepos([]);
     };
   }, [page]);
-
-  const addPage = (page: number) => {
-    if (!pages.includes(page)) {
-      setPages([...pages, page]);
-      setPage(page);
-    }
-  };
 
   return (
     <RepoContext.Provider
@@ -134,11 +121,9 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
         setValue,
         page,
         setPage,
-        addPage,
         repos,
         totalCount,
         loading,
-        fetchRepos,
         error,
         errorMessage,
       }}
