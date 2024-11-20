@@ -73,8 +73,8 @@ async function getDependenciesFromPage(page: Page): Promise<Dependency[]> {
       );
 
       if (nameElement && versionElement) {
-        const name = nameElement.textContent?.trim() || "";
-        const version = versionElement.textContent?.trim() || "";
+        const name = nameElement.textContent?.trim() || "N/A";
+        const version = versionElement.textContent?.trim() || "N/A";
         const href = nameElement.getAttribute("href");
 
         if (href) {

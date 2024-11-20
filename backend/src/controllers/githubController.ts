@@ -15,18 +15,20 @@ export const getRepos = async (req: Request, res: Response) => {
     try {
         // split the keywords by comma and pass them to the query
         const keywordsArray = keywords.split(',').map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
+        if (keywordsArray.length === 0) {
+            return res.status(400).json({ error: 'Invalid keywords' });
+        }
         const query = keywordsArray.map(keyword => `${keyword}`).join('+');
 
         // const built_URL = `https://api.github.com/search/repositories?q=(${query}+language:C&per_page=25&page=${page}`;
-        const built_URL = `https://api.github.com/search/repositories?q=${query}+language:C&per_page=25&page=${page}&sort=updated&order=desc`;
+        const built_URL = `https://api.github.com/search/repositories?q=${query}+language:C&per_page=20&page=${page}&sort=updated&order=desc`;
 
         let response = await axios.get(built_URL, {
             headers: {
             Authorization: `Bearer ${GITHUB_API_TOKEN}`,
             },
         });
-        // if total_count < 25 in reposnse then make another request 
-        // with the same query but no per_page and page = 1
+
 
         if (response.data.total_count < 25) {
 
@@ -47,6 +49,7 @@ export const getRepos = async (req: Request, res: Response) => {
 
 
         console.log(built_URL);
+        console.log(response.headers);
         res.json(response.data);
     } catch (error) {
         console.error('Error:', error);

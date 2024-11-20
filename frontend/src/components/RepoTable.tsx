@@ -1,148 +1,116 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom"; // useNavigate in the parent component
-import { Chip, Link, Tooltip, Typography } from "@mui/material";
+import { useMemo } from "react";
+import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
+import { useNavigate } from "react-router-dom";
+import { Chip, Link, Tooltip, Typography, Box, Button } from "@mui/material";
 import { useRepoContext } from "../hooks/useRepoContext";
-import { Repo } from "../types/Repo";
 import SearchBar from "./SearchBar";
-import {getHumanReadableDate} from "../utils"
+import { getHumanReadableDate } from "../utils";
+import { Repo } from "../types/Repo";
+import ErrorComponent from "./ErrorComponent";
 
 export default function RepoTable() {
-  const navigate = useNavigate(); // Hook should be used here, in the parent component
+  const navigate = useNavigate();
+  const { repos, totalCount, loading, error, errorMessage } = useRepoContext();
 
-  const columns: GridColDef[] = [
-    {
-      field: "full_name",
-      headerName: "Repo Name",
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      width: 250,
-      type: "string",
-      renderCell: (params) => (
-        <Link href={params.row.html_url} target="_blank">
-          {params.row.full_name}
-        </Link>
-      ),
-    },
-    {
-      field: "description",
-      headerName: "Description",
-      type: "string",
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      width: 300,
-      renderCell: (params) => (
-        <Tooltip
-          title={params.row.description ? params.row.description : "N/A"}
-        >
-          <Typography variant="body2" noWrap>
-            {params.row.description ? params.row.description : "N/A"}
+  const columns = useMemo<MRT_ColumnDef<Repo>[]>(
+    () => [
+      {
+        accessorKey: "full_name",
+        header: "Repo Name",
+        maxSize: 250,
+        Cell: ({ cell }) => (
+          <Link href={cell.row.original.html_url} target="_blank">
+            {cell.getValue<string>()}
+          </Link>
+        ),
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
+        maxSize: 400,
+        Cell: ({ cell }) => (
+          <Tooltip title={cell.getValue<string>() || "N/A"}>
+            <Typography variant="body2" noWrap>
+              {cell.getValue<string>() || "N/A"}
+            </Typography>
+          </Tooltip>
+        ),
+      },
+      {
+        accessorKey: "owner.login",
+        header: "Origin and Pedigree",
+        size: 160,
+        Cell: ({ cell }) => <Chip label={cell.getValue<string>() || "N/A"} />,
+      },
+      {
+        accessorKey: "updated_at",
+        header: "Support",
+        size: 250,
+        Cell: ({ cell }) => (
+          <Typography variant="body2">
+            {cell.getValue<string>()
+              ? getHumanReadableDate(cell.getValue<string>())
+              : "N/A"}
           </Typography>
-        </Tooltip>
-      ),
-    },
-    {
-      field: "owner.login",
-      headerName: "Origin and Pedigree",
-      width: 160,
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      renderCell: (params) => <Chip label={params.row.owner?.login ?? "N/A"} />,
-    },
-    {
-      field: "updated_at",
-      headerName: "Support",
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      width: 250,
-      renderCell: (params) => (
-        <Typography variant="body2">
-          {params.row.updated_at ? getHumanReadableDate(params.row.updated_at) : "N/A"}
-        </Typography>
-      ),
-    },
-    {
-      field: "license.name",
-      headerName: "License",
-      width: 200,
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      renderCell: (params) => (
-        <Chip
-          label={
-            params.row.license
-              ? params.row.license.name || "No License"
-              : "No License"
-          }
-        />
-      ),
-    },
+        ),
+      },
+      {
+        accessorKey: "license.name",
+        header: "License",
+        size: 200,
+        Cell: ({ cell }) => (
+          <Chip label={cell.getValue<string>() || "No License"} />
+        ),
+      },
+      {
+        accessorKey: "html_url",
+        header: "Details Page",
+        size: 200,
+        Cell: ({ cell }) => (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate(`/repo/${cell.row.original.id}`)}
+          >
+            View Details
+          </Button>
+        ),
+      },
+    ],
+    [navigate]
+  );
 
-    {
-      field: "html_url",
-      headerName: "Details Page",
-      width: 200,
-      sortable: false,
-      filterable: false,
-      hideable: false,
-      type: "actions",
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            // Use the navigate function from the parent RepoTable component
-            navigate(`/repo/${params.row.id}`);
-          }}
-        >
-          View Details
-        </Button>
-      ),
-    },
-  ];
-  const { repos, setPage } = useRepoContext();
-
-  const rows = repos.map((repo) => {
-    return {
-      id: repo.id,
-      full_name: repo.full_name,
-      description: repo.description,
-      stargazers_count: repo.stargazers_count,
-      owner: repo.owner,
-      updated_at: repo.updated_at,
-      license: repo.license,
-      html_url: repo.html_url,
-    };
-  });
+  if (error) {
+    return <ErrorComponent message={errorMessage} />;
+  }
 
   return (
     <Box sx={{ height: "90%", width: "100%" }}>
       <SearchBar />
-      <DataGrid
-        getRowId={(row) => row.id}
-        rows={rows}
+      <MaterialReactTable
         columns={columns}
+        data={repos}
+        enableColumnResizing={true}
+        rowCount={totalCount}
+        enableTopToolbar={false}
+        enableSorting={false}
+        enableFilters={false}
+        enableColumnActions={false}
+        enablePagination={true}
+        state={{
+          isLoading: loading,
+        }}
         initialState={{
           pagination: {
-            paginationModel: {
-              pageSize: 20,
-            },
+            pageIndex: 0,
+            pageSize: 20,
           },
         }}
-        disableRowSelectionOnClick
-        pagination
-        pageSizeOptions={[20]}
-        onPaginationModelChange={(model) => {
-          // only try setting the page if the page is not in pages fetched already
-          if (model.page > 0) {
-            setPage(model.page);
-          }
+        // onPaginationChange={}
+        muiPaginationProps={{
+          showRowsPerPage: false,
+          showFirstButton: false,
+          showLastButton: false,
         }}
       />
     </Box>

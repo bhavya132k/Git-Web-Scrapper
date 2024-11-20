@@ -25,8 +25,11 @@ import {
 import ErrorComponent from "./ErrorComponent";
 import { getHumanReadableDate } from "../utils";
 
+
+
 const fetchData = async (owner: string, repo_name: string) => {
   const response = await fetch(
+
     `http://localhost:3000/scrape-dependencies/${owner}/${repo_name}`
   ); // replace with your API URL
   if (!response.ok) {
@@ -83,7 +86,7 @@ export default function RepoDetails() {
   const { repos } = useRepoContext();
   const { repoId } = useParams();
   const repo = repos.find((item) => item.id === Number(repoId));
-  const [pluggability, setPluggability] = useState<string | number>("N/A");
+  const [plugability, setPlugability] = useState<string | number>("N/A");
   const [extensibility, setExtensibility] = useState<string | number>("N/A");
   const [total, setTotal] = useState<number>(0);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -100,8 +103,8 @@ export default function RepoDetails() {
 
   useEffect(() => {
     console.log("Calculating scores for: ", repo);
-    setPluggability(calculatePluggabilityScore(repo));
-    console.log("Pluggability Score: ", pluggability);
+    setPlugability(calculatePluggabilityScore(repo));
+    console.log("Plugability Score: ", plugability);
     setExtensibility(calculateExtensibilityScore(repo));
     console.log("Extensibility Score: ", extensibility);
   }, [repo]);
@@ -125,6 +128,11 @@ export default function RepoDetails() {
     if (repo.owner && repo.owner.login && repo.name) {
       fetchDependencies();
     }
+
+    return () => {
+      
+      console.log("Cleanup");
+    };
   }, [repo]);
 
 
@@ -195,9 +203,9 @@ export default function RepoDetails() {
           <Typography variant="body1">{repo.description}</Typography>
           <Stack spacing={1} direction="column" mt={2}>
             <RepoCard
-              heading="Pluggability"
-              content="Pluggability score is based on stars,forks and keywords (plugin, API) in description with specified thresholds."
-              score={pluggability}
+              heading="Plugability"
+              content="Plugability score is based on stars, forks and keywords (plugin, API) in description with specified thresholds."
+              score={plugability}
             />
             <RepoCard
               heading="Extensibility"

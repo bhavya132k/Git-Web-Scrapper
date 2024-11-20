@@ -7,7 +7,7 @@ import { Button, Chip, Backdrop, CircularProgress } from "@mui/material";
 import { useRepoContext } from "../hooks/useRepoContext";
 
 export default function SearchBar() {
-  const { value, setValue, loading } = useRepoContext();
+  const { value, setValue } = useRepoContext();
   const [tags, setTags] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
   const [error, setError] = React.useState({ error: false, helperText: "" });
@@ -116,12 +116,6 @@ export default function SearchBar() {
         Search
       </Button>
 
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </Stack>
   );
 }

@@ -5,11 +5,8 @@ import NavBar from "./components/NavBar";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RepoProvider } from "./hooks/useRepoContext";
 
-const qc = new QueryClient();
 function App() {
   const theme = createTheme({
     palette: {
@@ -19,7 +16,6 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <QueryClientProvider client={qc}>
         <Container maxWidth="xl">
           <CssBaseline />
           <Router>
@@ -32,7 +28,6 @@ function App() {
             </RepoProvider>
           </Router>
         </Container>
-      </QueryClientProvider>
     </ThemeProvider>
   );
 }
