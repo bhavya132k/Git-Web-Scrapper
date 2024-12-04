@@ -12,6 +12,10 @@ export const getRepos = async (req: Request, res: Response) => {
         // split the keywords by comma and check if they are valid
         return res.status(400).json({ error: 'Invalid keywords' });
     }
+
+    if (process.env.RATE_LIMIT === 'true') {
+        return res.status(403).json({ error: 'Rate limit exceeded' });
+    }
     try {
         // split the keywords by comma and pass them to the query
         const keywordsArray = keywords.split(',').map(keyword => keyword.trim()).filter(keyword => keyword.length > 0);
@@ -30,7 +34,7 @@ export const getRepos = async (req: Request, res: Response) => {
         });
 
 
-        if (response.data.total_count < 25) {
+        if (response.data.total_count < 20) {
 
             const built_URL = `https://api.github.com/search/repositories?q=${query}+language:C&sort=updated&order=desc`;
             // wait for 1 second before making the request
@@ -43,7 +47,7 @@ export const getRepos = async (req: Request, res: Response) => {
         
         }
 
-        if(response.status == 403){
+        if(response.status == 403 ){
             res.status(403).json({ error: 'Rate limit exceeded' });
         }
 

@@ -70,10 +70,16 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
             console.log(repos);
             setLoading(false);
           });
-        } else {
+        } 
+        else if (response.status === 403) {
+          setError(true);
+          setErrorMessage("Rate limit exceeded");
+        }
+        else {
           throw new Error("Failed to fetch");
         }
       })
+
       .catch((error) => {
         console.error("Error:", error);
         setLoading(false);
@@ -81,7 +87,7 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
           return;
         }
         setError(true);
-        setErrorMessage("Failed to fetch");
+        setErrorMessage(error.message);
       });
   };
 
@@ -103,7 +109,6 @@ export const RepoProvider: React.FC<{ children: React.ReactNode }> = ({
   const oldPage = page;
 
   useEffect(() => {
-
     fetchRepos(true);
     setPage(page);
     console.log(`Page changed from ${oldPage} to ${page}`);
